@@ -1,3 +1,4 @@
+import { RolesService } from "./../roles/roles.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./users.model";
 import { Injectable } from "@nestjs/common";
@@ -5,30 +6,38 @@ import { InjectModel } from "@nestjs/sequelize";
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepository: typeof User) {}
+    constructor(
+        @InjectModel(User) private userRepository: typeof User,
+        private roleService: RolesService
+    ) {}
 
-  async createUser(dto: CreateUserDto) {
-    const user = await this.userRepository.create(dto);
+    async createUser(dto: CreateUserDto) {
+        const user = await this.userRepository.create(dto);
+        const role = await this.roleService.getRoleByValue("USER");
 
-    return user;
-  }
-  async getUsers() {
-    const users = await this.userRepository.findAll();
+        await user.$set("roles", [role.id]);
 
-    return users;
-  }
-  async deleteUserById(id: number) {
-    const deletedUser = await this.userRepository.destroy({
-      where: { id: id },
-    });
+        return user;
+    }
+    async getUsers() {
+        const users = await this.userRepository.findAll({
+            include: { all: true },
+        });
 
-    return deletedUser;
-  }
-  async getUserById(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id: id },
-    });
+        return users;
+    }
+    async deleteUserById(id: number) {
+        const deletedUser = await this.userRepository.destroy({
+            where: { id: id },
+        });
 
-    return user;
-  }
+        return deletedUser;
+    }
+    async getUserById(id: number) {
+        const user = await this.userRepository.findOne({
+            where: { id: id },
+        });
+
+        return user;
+    }
 }
