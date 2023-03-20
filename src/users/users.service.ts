@@ -17,6 +17,8 @@ export class UsersService {
 
         await user.$set("roles", [role.id]);
 
+        user.roles = [role];
+
         return user;
     }
     async getUsers() {
@@ -33,9 +35,10 @@ export class UsersService {
 
         return deletedUser;
     }
-    async getUserById(id: number) {
+    async getUserByEmail(email: string) {
         const user = await this.userRepository.findOne({
-            where: { id: id },
+            where: { email: email },
+            include: { all: true },
         });
 
         return user;

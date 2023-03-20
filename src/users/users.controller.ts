@@ -23,11 +23,11 @@ export class UsersController {
         return this.usersService.getUsers();
     }
 
-    @ApiOperation({ summary: "Get user by id" })
+    @ApiOperation({ summary: "Get user by email" })
     @ApiResponse({ status: 200, type: User })
-    @Get(":id")
-    getOne(@Param("id") id: string) {
-        return this.usersService.getUserById(+id);
+    @Get("/:email")
+    getOne(@Param("email") email: string) {
+        return this.usersService.getUserByEmail(email);
     }
 
     @ApiOperation({ summary: "Remove user by id" })
